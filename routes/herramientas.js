@@ -211,8 +211,23 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
+    const query = "DELETE FROM herramientas WHERE idherramienta = ?"
+    const [result] = await db.query(query, [req.params.id])
+
+    //La consultaq se ejecutó correctamente sin problemas , pero NO afectó a la tabla
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No existe la herramienta que desea eliminar"
+      })
+    }
+
+    res.json({
+      success: true,
+      message: "Eliminado correctamente",
+    })
   } catch (err) {
     // ¿Por qué 500? Error generado del lado servidor
     res.status(500).json({
